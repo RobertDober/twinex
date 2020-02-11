@@ -1,4 +1,11 @@
 defmodule Twinex do
+
+  @type pair(t) :: {t, t}
+
+  @type any_list_t :: list(any())
+  @type counters_t :: pair(map())
+  @type strings_t :: list(String.t)
+
   @moduledoc """
   """
 
@@ -36,6 +43,7 @@ defmodule Twinex do
       true
 
   """
+  @spec twins?( String.t, String.t ) :: boolean()
   def twins?(lhs, rhs) do
     if String.length(lhs) == String.length(rhs) do
       _counts(lhs) == _counts(rhs)
@@ -66,9 +74,8 @@ defmodule Twinex do
       iex(8)> list1 = ~w[yes]
       ...(8)> twin_pairs(list1, [])
       []
-
-
   """
+  @spec twin_pairs( strings_t(), strings_t(), Keyword.t ) :: any_list_t()
   def twin_pairs(lhs, rhs, options \\ []) do
     yes_str = Keyword.get(options, :yes, "Yo")
     no_str = Keyword.get(options, :no, "Na")
@@ -76,6 +83,7 @@ defmodule Twinex do
     |> Enum.map(fn {le, re} -> if twins?(le, re), do: yes_str, else: no_str end)
   end
 
+  @spec _counts( String.t ) :: counters_t()
   defp _counts(string) do
     string
     |> String.graphemes
@@ -83,10 +91,12 @@ defmodule Twinex do
     |> Enum.reduce({%{}, %{}}, &_update_counters/2)
   end
 
+  @spec _update_counter( map(), String.t ) :: map()
   defp _update_counter(counter, graph) do
     Map.put(counter, graph, Map.get(counter, graph, 0) + 1)
   end
 
+  @spec _update_counters( strings_t(), counters_t() ) :: counters_t()
   defp _update_counters( [even_graph, odd_graph], {even_counter, odd_counter} ) do
     {
       _update_counter(even_counter, even_graph),
